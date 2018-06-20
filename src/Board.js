@@ -78,13 +78,21 @@
     // --------------------------------------------------------------
     //
     // test if a specific row on this board contains a conflict
-    hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+    hasRowConflictAt: function( rowIndex ) {
+      return this.get( rowIndex ).reduce( function(a,n){ return a + n } ) > 1;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      // var hasColConflict = false;
+
+      var rows = this.get('n');
+
+      for( let i = 0; i < rows; i++){
+        if( this.hasRowConflictAt( i ) ){ return true; }
+      }
+      
+      return false;
     },
 
 
@@ -93,13 +101,26 @@
     // --------------------------------------------------------------
     //
     // test if a specific column on this board contains a conflict
-    hasColConflictAt: function(colIndex) {
-      return false; // fixme
+    hasColConflictAt: function( colIndex ) {
+      // return false; // fixme
+      var n = this.get('n');
+
+      var col = _.range( n ).map(function(i){
+        return this.get( i )[ colIndex ];
+      }, this);
+
+
+      return col.reduce(function(a, n){ return a + n }) > 1;
+
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      for(let i = 0; i < this.get('n'); i++){
+        if( this.hasColConflictAt( i ) ){ return true; }
+      }
+
+      return false;
     },
 
 
@@ -109,7 +130,23 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var row, col;
+      
+      if( majorDiagonalColumnIndexAtFirstRow < 0 ){
+        row = Math.abs(majorDiagonalColumnIndexAtFirstRow);
+        col = 0;
+      } else {
+        row = 0;
+        col = majorDiagonalColumnIndexAtFirstRow;
+      }
+
+      var diagonal = [];
+
+      while( this._isInBounds(row, col) ){  
+        diagonal.push( this.get(row++)[ col++ ] );
+      }
+
+      return diagonal.reduce(function(a, n){ return a + n }) > 1;
     },
 
     // test if any major diagonals on this board contain conflicts
